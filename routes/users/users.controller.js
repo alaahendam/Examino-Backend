@@ -5,7 +5,6 @@ const login = async (req, res) => {
   const { name, password } = req.body;
   const encryptedPassword = await bcrypt.hash(password, 10);
   console.log(password);
-  console.log("this is new");
   if (bcrypt.compare(password, test)) {
     return res.status(200).json("success");
   } else {
