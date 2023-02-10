@@ -9,46 +9,67 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 enum Role {
   Teacher
   Student
 }
 
-model User{
-  id Int @id @default(autoincrement())
-  name String @unique
-  userId Int @unique
-  email String @unique
-  telephone String
-  password String
-  role Role @default(Teacher)
-  profile Profile ?
-  ownedLevels Level[] @relation("OwnerLevel")
-  levels Level[]
+model User {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique
+  userId        Int             @unique
+  email         String          @unique
+  telephone     String
+  password      String
+  role          Role            @default(Teacher)
+  profile       Profile?
+  ownedLevels   Level[]         @relation("OwnerLevel")
+  LevelsOnUsers LevelsOnUsers[]
 }
-model Profile{
-  id Int @id @default(autoincrement())
-  title String
-  about String
-  user User @relation(fields: [userId],references: [id])
-  userId Int @unique
-}
-model Level{
-  id Int @id @default(autoincrement())
-  name String
-  owner User @relation("OwnerLevel",fields: [ownerId],references: [id])
-  ownerId Int @unique
-  students User[]
-  chatpers Chapter[] @relation("level")
-}
-model Chapter {
-  id Int @id @default(autoincrement())
-  name String
-  level Level @relation("level",fields: [levelId],references: [id])
-  levelId Int @unique
-  qustions Json?
-}
-model Question{
-  id Int @id @default(autoincrement())
 
+model Profile {
+  id     Int    @id @default(autoincrement())
+  title  String
+  about  String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int    @unique
+}
+
+model Level {
+  id          Int             @id @default(autoincrement())
+  name        String
+  specialCode String          @unique
+  owner       User            @relation("OwnerLevel", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     Int
+  students    LevelsOnUsers[]
+  chapters    Chapter[]       @relation("level")
+}
+
+model LevelsOnUsers {
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId          Int
+  level           Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
+  levelId         Int
+  studentApproved Boolean? @default(false)
+  ownerApperoved  Boolean? @default(false)
+
+  @@id([userId, levelId])
+}
+
+model Chapter {
+  id       Int        @id @default(autoincrement())
+  name     String
+  level    Level      @relation("level", fields: [levelId], references: [id], onDelete: Cascade)
+  levelId  Int
+  Question Question[]
+}
+
+model Question {
+  id         Int     @id @default(autoincrement())
+  chapter    Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  chapterId  Int
+  difficulty String
+  type       String
+  details    Json
 }

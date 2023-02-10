@@ -29,10 +29,21 @@ CREATE TABLE `Profile` (
 CREATE TABLE `Level` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
+    `specialCode` VARCHAR(191) NOT NULL,
     `ownerId` INTEGER NOT NULL,
 
-    UNIQUE INDEX `Level_ownerId_key`(`ownerId`),
+    UNIQUE INDEX `Level_specialCode_key`(`specialCode`),
     PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `LevelsOnUsers` (
+    `userId` INTEGER NOT NULL,
+    `levelId` INTEGER NOT NULL,
+    `studentApproved` BOOLEAN NULL DEFAULT false,
+    `ownerApperoved` BOOLEAN NULL DEFAULT false,
+
+    PRIMARY KEY (`userId`, `levelId`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
@@ -40,39 +51,34 @@ CREATE TABLE `Chapter` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `name` VARCHAR(191) NOT NULL,
     `levelId` INTEGER NOT NULL,
-    `qustions` JSON NULL,
 
-    UNIQUE INDEX `Chapter_levelId_key`(`levelId`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
 CREATE TABLE `Question` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `chapterId` INTEGER NOT NULL,
+    `difficulty` VARCHAR(191) NOT NULL,
+    `type` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
--- CreateTable
-CREATE TABLE `_LevelToUser` (
-    `A` INTEGER NOT NULL,
-    `B` INTEGER NOT NULL,
-
-    UNIQUE INDEX `_LevelToUser_AB_unique`(`A`, `B`),
-    INDEX `_LevelToUser_B_index`(`B`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+-- AddForeignKey
+ALTER TABLE `Profile` ADD CONSTRAINT `Profile_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Profile` ADD CONSTRAINT `Profile_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Level` ADD CONSTRAINT `Level_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Level` ADD CONSTRAINT `Level_ownerId_fkey` FOREIGN KEY (`ownerId`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `LevelsOnUsers` ADD CONSTRAINT `LevelsOnUsers_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Chapter` ADD CONSTRAINT `Chapter_levelId_fkey` FOREIGN KEY (`levelId`) REFERENCES `Level`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `LevelsOnUsers` ADD CONSTRAINT `LevelsOnUsers_levelId_fkey` FOREIGN KEY (`levelId`) REFERENCES `Level`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_LevelToUser` ADD CONSTRAINT `_LevelToUser_A_fkey` FOREIGN KEY (`A`) REFERENCES `Level`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Chapter` ADD CONSTRAINT `Chapter_levelId_fkey` FOREIGN KEY (`levelId`) REFERENCES `Level`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `_LevelToUser` ADD CONSTRAINT `_LevelToUser_B_fkey` FOREIGN KEY (`B`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `Question` ADD CONSTRAINT `Question_chapterId_fkey` FOREIGN KEY (`chapterId`) REFERENCES `Chapter`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
