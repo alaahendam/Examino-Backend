@@ -1,4 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
+const { TokenExpiredError } = require("jsonwebtoken");
 const prisma = new PrismaClient();
 
 const create = async (req, res) => {
@@ -77,13 +78,14 @@ const getOwnerLevels = async (req, res) => {
   }
 };
 const levelInfo = async (req, res) => {
-  const { levelName, ownerId } = req.body;
+  const { levelName, ownerId, specialCode } = req.body;
   console.log(req.body);
   try {
     const level = await prisma.level.findMany({
       where: {
         ownerId: Number(ownerId),
         name: levelName,
+        specialCode: specialCode,
       },
       include: {
         chapters: true,
@@ -95,6 +97,103 @@ const levelInfo = async (req, res) => {
     return res.status(400).json("can't find any level");
   }
 };
+const getLevel = async (req, res) => {
+  const data = req.body;
+  console.log(req.body);
+  try {
+    const level = await prisma.level.findUnique({
+      where: data,
+      include: {
+        owner: true,
+      },
+    });
+    if (level) {
+      return res.status(200).json(level);
+    } else {
+      return res.status(400).json("can't find any level");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).json("can't find any level");
+  }
+};
+const addLevelOnUser = async (req, res) => {
+  const { userId, levelId } = req.body;
+  try {
+    const levelOnUser = await prisma.levelsOnUsers.create({
+      data: {
+        user: { connect: { id: userId } },
+        level: { connect: { id: levelId } },
+      },
+    });
+    res.status(200).json(levelOnUser);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send("can't add Student in this level");
+  }
+};
+const checkStudentApproved = async (req, res) => {
+  const { userId, levelId } = req.body;
+  try {
+    const levelOnUser = await prisma.levelsOnUsers.findUnique({
+      where: {
+        userId_levelId: {
+          userId: userId,
+          levelId: levelId,
+        },
+      },
+    });
+    if (levelOnUser) {
+      res.status(200).json(levelOnUser);
+    } else {
+      return res.status(400).send("Student not exist in this level");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send("Student not exist in this level");
+  }
+};
+const getLevelStudents = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const levelOnUser = await prisma.levelsOnUsers.findMany({
+      where: {
+        levelId: Number(id),
+      },
+      include: {
+        user: true,
+      },
+    });
+    if (levelOnUser) {
+      res.status(200).json(levelOnUser);
+    } else {
+      return res.status(400).send("Student not exist on this level");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send("Student not exist in this level");
+  }
+};
+const ownerApproved = async (req, res) => {
+  const { userId, levelId } = req.body;
+  try {
+    const ownerApprove = await prisma.levelsOnUsers.update({
+      where: {
+        userId_levelId: {
+          userId: userId,
+          levelId: levelId,
+        },
+      },
+      data: {
+        ownerApproved: true,
+      },
+    });
+    return res.status(200).send("ownerApprove");
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send("cant update owner Approve");
+  }
+};
 module.exports = {
   create,
   edit,
@@ -103,4 +202,9 @@ module.exports = {
   deleteAll,
   getOwnerLevels,
   levelInfo,
+  getLevel,
+  addLevelOnUser,
+  checkStudentApproved,
+  getLevelStudents,
+  ownerApproved,
 };

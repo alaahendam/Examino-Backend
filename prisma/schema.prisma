@@ -26,6 +26,7 @@ model User {
   profile       Profile?
   ownedLevels   Level[]         @relation("OwnerLevel")
   LevelsOnUsers LevelsOnUsers[]
+  studentExam   StudentExam[]
 }
 
 model Profile {
@@ -44,6 +45,7 @@ model Level {
   ownerId     Int
   students    LevelsOnUsers[]
   chapters    Chapter[]       @relation("level")
+  Exam        Exam[]          @relation("level")
 }
 
 model LevelsOnUsers {
@@ -51,8 +53,8 @@ model LevelsOnUsers {
   userId          Int
   level           Level    @relation(fields: [levelId], references: [id], onDelete: Cascade)
   levelId         Int
-  studentApproved Boolean? @default(false)
-  ownerApperoved  Boolean? @default(false)
+  studentApproved Boolean? @default(true)
+  ownerApproved   Boolean? @default(false)
 
   @@id([userId, levelId])
 }
@@ -72,4 +74,31 @@ model Question {
   difficulty String
   type       String
   details    Json
+}
+
+model Exam {
+  id        Int      @id @default(autoincrement())
+  level     Level    @relation("level", fields: [levelId], references: [id], onDelete: Cascade)
+  levelId   Int
+  examName  String
+  duration  Int
+  start     DateTime
+  end       DateTime
+  points    Int
+  questions Json
+}
+
+model StudentExam {
+  id       Int       @unique @default(autoincrement())
+  examId   Int
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId   Int
+  examName String
+  points   Int
+  score    Int?
+  startAt  DateTime
+  endAt    DateTime?
+  answers  Json?
+
+  @@id([userId, examId])
 }

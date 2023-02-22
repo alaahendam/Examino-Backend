@@ -7,11 +7,13 @@ const {
   //   addquestion,
   deleteAll,
   getChapterQuestions,
+  deleteQuestion,
   //   questionInfo,
 } = require("./question.controller");
 question.post("/create", create);
 question.post("/getChapterQuestions", getChapterQuestions);
 question.put("/edit", edit);
+question.delete("/deleteQuestion/:id", deleteQuestion);
 // question.get("/getAll", getAll);
 // question.post("/questionInfo", questionInfo);
 // question.post("/getOwnerquestions", getOwnerquestions);

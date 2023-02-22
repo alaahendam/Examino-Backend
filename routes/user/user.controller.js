@@ -31,17 +31,8 @@ const login = async (req, res) => {
   }
 };
 const create = async (req, res) => {
-  console.log(req.body);
   const { name, userId, email, telephone, password, role } = req.body;
   const encryptedPassword = await bcrypt.hash(password, 10);
-
-  const user = await prisma.user.findUnique({
-    where: {
-      name: name,
-    },
-  });
-
-  if (user) return res.status(409).json("Username is already used");
 
   try {
     var createdUser = await prisma.user.create({
@@ -54,9 +45,18 @@ const create = async (req, res) => {
         role: role,
       },
     });
-    return res.status(200).json("success to create user");
+    const token = jwtSign({
+      id: createdUser.id,
+      name: createdUser.name,
+      role: createdUser.role,
+      userId: createdUser.userId,
+      password: null,
+    });
+    return res
+      .status(200)
+      .json({ token: token, data: { ...createdUser, password: null } });
   } catch (error) {
-    return res.status(400).json(error);
+    return res.status(400).json("User is already exist");
   }
 };
 const edit = (req, res) => {

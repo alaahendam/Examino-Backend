@@ -100,6 +100,18 @@ const getChapterQuestions = async (req, res) => {
 //     return res.status(400).json("can't find any question");
 //   }
 // };
+const deleteQuestion = async (req, res) => {
+  try {
+    const deleteQuestion = await prisma.question.delete({
+      where: {
+        id: Number(req.params.id),
+      },
+    });
+    return res.status(200).json("success to delete Question");
+  } catch (error) {
+    return res.status(400).json(error);
+  }
+};
 module.exports = {
   create,
   edit,
@@ -107,5 +119,6 @@ module.exports = {
   //   addquestion,
   deleteAll,
   getChapterQuestions,
+  deleteQuestion,
   //   questionInfo,
 };
