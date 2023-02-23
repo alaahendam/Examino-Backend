@@ -96,7 +96,7 @@ model StudentExam {
   examName String
   points   Int
   score    Int?
-  startAt  DateTime
+  startAt  DateTime  @default(now())
   endAt    DateTime?
   answers  Json?
 

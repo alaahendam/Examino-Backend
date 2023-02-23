@@ -7,6 +7,7 @@ const levelRouter = require("../routes/level/level.router");
 const chapterRouter = require("../routes/chapter/chapter.router");
 const questionRouter = require("../routes/question/question.router");
 const examRouter = require("../routes/exam/exam.router");
+const studentExamRouter = require("../routes/studentExam/studentExam.router");
 
 const app = express();
 
@@ -18,5 +19,6 @@ app.use("/level", levelRouter);
 app.use("/chapter", chapterRouter);
 app.use("/question", questionRouter);
 app.use("/exam", examRouter);
+app.use("/studentExam", studentExamRouter);
 
 module.exports = app;

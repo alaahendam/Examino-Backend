@@ -48,7 +48,12 @@ const studentExams = async (req, res) => {
         },
       },
     });
-    let exams = { activeExam: [], futureExam: [] };
+    const getOldExams = await prisma.studentExam.findMany({
+      where: {
+        userId: id,
+      },
+    });
+    let exams = { activeExam: [], futureExam: [], oldExam: getOldExams };
     let today = new Date();
     if (getExams.LevelsOnUsers) {
       getExams.LevelsOnUsers.map((level) => {
