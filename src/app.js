@@ -14,6 +14,9 @@ const app = express();
 app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.get("/", (req, res) => {
+  return res.status(200).send("this server work good");
+});
 app.use("/user", userRouter);
 app.use("/level", levelRouter);
 app.use("/chapter", chapterRouter);
