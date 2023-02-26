@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const { jwtSign, jwtVerify } = require("../../src/utilities/token");
 const { PrismaClient } = require("@prisma/client");
+const { TokenExpiredError } = require("jsonwebtoken");
 const prisma = new PrismaClient();
 
 const login = async (req, res) => {
@@ -131,6 +132,25 @@ const checkToken = async (req, res) => {
       res.status(401).send("Invalid token.");
     });
 };
+const checkUser = async (req, res) => {
+  const searchData = req.body;
+  console.log("searchData", searchData);
+  try {
+    const findUser = await prisma.user.findUnique({
+      where: searchData,
+    });
+    if (findUser) {
+      console.log("find");
+      return res.status(200).send("find user");
+    } else {
+      console.log("not find");
+      return res.status(400).send("can't find this user");
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   login,
   create,
@@ -140,4 +160,5 @@ module.exports = {
   deleteAll,
   deleteUser,
   checkToken,
+  checkUser,
 };

@@ -10,6 +10,7 @@ const {
   deleteAll,
   deleteUser,
   checkToken,
+  checkUser,
 } = require("./user.controller");
 user.post("/login", login);
 user.post("/create", create);
@@ -19,6 +20,7 @@ user.get("/getUser/:id", getUser);
 user.delete("/deleteUser", auth, deleteUser);
 user.delete("/deleteAll", deleteAll);
 user.post("/checkToken", auth, checkToken);
+user.post("/checkUser", checkUser);
 
 checkToken;
 module.exports = user;
