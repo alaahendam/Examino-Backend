@@ -51,6 +51,9 @@ const studentExams = async (req, res) => {
     const getOldExams = await prisma.studentExam.findMany({
       where: {
         userId: id,
+        examEnd: {
+          lte: new Date(),
+        },
       },
     });
     let exams = { activeExam: [], futureExam: [], oldExam: getOldExams };
@@ -74,7 +77,21 @@ const studentExams = async (req, res) => {
     console.log(error);
   }
 };
+const getAllTeacherExams = async (req, res) => {
+  try {
+    const teacherExams = await prisma.exam.findMany({
+      where: {
+        ownerId: Number(req.params.id),
+      },
+    });
+    return res.status(200).json(teacherExams);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   create,
   studentExams,
+  getAllTeacherExams,
 };

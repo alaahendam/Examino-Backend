@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgres"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -80,6 +80,7 @@ model Exam {
   id        Int      @id @default(autoincrement())
   level     Level    @relation("level", fields: [levelId], references: [id], onDelete: Cascade)
   levelId   Int
+  ownerId   Int?
   examName  String
   duration  Int
   start     DateTime
@@ -89,16 +90,19 @@ model Exam {
 }
 
 model StudentExam {
-  id       Int       @unique @default(autoincrement())
-  examId   Int
-  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId   Int
-  examName String
-  points   Int
-  score    Int?
-  startAt  DateTime  @default(now())
-  endAt    DateTime?
-  answers  Json?
+  id          Int       @unique @default(autoincrement())
+  examId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId      Int
+  examName    String
+  points      Int
+  score       Int?
+  grade       Int?
+  startAt     DateTime  @default(now())
+  endAt       DateTime?
+  answers     Json?
+  teacherName String?
+  examEnd     DateTime?
 
   @@id([userId, examId])
 }

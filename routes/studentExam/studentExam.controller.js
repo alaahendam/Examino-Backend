@@ -3,7 +3,7 @@ const exam = require("../exam/exam.router");
 const prisma = new PrismaClient();
 
 const create = async (req, res) => {
-  const { examId, userId, answers, examName, points, endAt } = req.body;
+  const { examId, userId, answers, examName, points, examEnd } = req.body;
   try {
     var findStudentExam = await prisma.studentExam.findUnique({
       where: {
@@ -14,7 +14,6 @@ const create = async (req, res) => {
       },
     });
     if (findStudentExam) {
-      console.log("find Student Exam", findStudentExam);
       return res.status(200).json(findStudentExam);
     } else {
       var createdstudentExam = await prisma.studentExam.create({
@@ -24,6 +23,7 @@ const create = async (req, res) => {
           examName: examName,
           points: Number(points),
           answers: answers,
+          examEnd: new Date(examEnd),
         },
       });
       console.log("create student Exam", createdstudentExam);
@@ -44,9 +44,25 @@ function multipleInArray(arr, values) {
   return flag;
 }
 const submitExam = async (req, res) => {
-  const { examId, userId, answers } = req.body;
+  const { examId, userId, answers, points } = req.body;
   let tempScore = 0;
   try {
+    const examOwner = await prisma.exam.findUnique({
+      where: {
+        id: examId,
+      },
+      select: {
+        level: {
+          select: {
+            owner: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
     answers.map((answerInfo) => {
       switch (answerInfo.questionType) {
         case "radio":
@@ -106,6 +122,8 @@ const submitExam = async (req, res) => {
         score: tempScore,
         endAt: new Date(),
         answers: answers,
+        grade: (tempScore / points) * 100,
+        teacherName: examOwner.level.owner.name,
       },
     });
     return res.status(200).send(submitedStudentExam);
@@ -131,8 +149,25 @@ const getStudentExams = async (req, res) => {
     res.status(400).send(error);
   }
 };
+const studentCertificates = async (req, res) => {
+  try {
+    const certificates = await prisma.studentExam.findMany({
+      where: {
+        userId: Number(req.params.id),
+        grade: {
+          gte: 75,
+        },
+      },
+    });
+    return res.status(200).json(certificates);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   create,
   submitExam,
   getStudentExams,
+  studentCertificates,
 };

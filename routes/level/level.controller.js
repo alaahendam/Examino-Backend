@@ -56,11 +56,18 @@ const addLevel = async (req, res) => {
   });
   return res.status(200).json("all levels");
 };
-const deleteAll = async (req, res) => {
+const deleteStudent = async (req, res) => {
+  const data = req.body;
+  console.log(data);
   try {
-    const deleteUsers = await prisma.level.deleteMany();
-    return res.status(200).json("success");
+    const deleteUsers = await prisma.LevelsOnUsers.deleteMany({
+      where: {
+        ...data,
+      },
+    });
+    return res.status(200).send("success delete student");
   } catch (error) {
+    console.log(error);
     return res.status(400).json(error);
   }
 };
@@ -194,12 +201,34 @@ const ownerApproved = async (req, res) => {
     return res.status(400).send("cant update owner Approve");
   }
 };
+const studentMemberships = async (req, res) => {
+  try {
+    const memberships = await prisma.levelsOnUsers.findMany({
+      where: {
+        userId: Number(req.params.id),
+      },
+      select: {
+        level: {
+          select: {
+            owner: true,
+            name: true,
+          },
+        },
+        ownerApproved: true,
+      },
+    });
+    return res.status(200).json(memberships);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   create,
   edit,
   getAll,
   addLevel,
-  deleteAll,
+  deleteStudent,
   getOwnerLevels,
   levelInfo,
   getLevel,
@@ -207,4 +236,5 @@ module.exports = {
   checkStudentApproved,
   getLevelStudents,
   ownerApproved,
+  studentMemberships,
 };
