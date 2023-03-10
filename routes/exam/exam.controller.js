@@ -10,6 +10,7 @@ const create = async (req, res) => {
     endDate,
     totalPointes,
     examQuestion,
+    ownerId,
   } = req.body;
   try {
     var createdExam = await prisma.exam.create({
@@ -21,6 +22,7 @@ const create = async (req, res) => {
         end: new Date(endDate),
         points: Number(totalPointes),
         questions: examQuestion,
+        ownerId: Number(ownerId),
       },
     });
     return res.status(200).json(createdExam);
