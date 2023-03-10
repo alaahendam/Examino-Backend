@@ -23,7 +23,7 @@ const create = async (req, res) => {
         questions: examQuestion,
       },
     });
-    return res.status(200).json("success to create exam");
+    return res.status(200).json(createdExam);
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);
@@ -90,8 +90,22 @@ const getAllTeacherExams = async (req, res) => {
     return res.status(400).send(error);
   }
 };
+const deleteExam = async (req, res) => {
+  try {
+    const del = await prisma.exam.delete({
+      where: {
+        id: Number(req.params.id),
+      },
+    });
+    return res.status(200).send("delete success");
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   create,
   studentExams,
   getAllTeacherExams,
+  deleteExam,
 };

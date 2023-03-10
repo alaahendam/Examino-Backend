@@ -165,9 +165,26 @@ const studentCertificates = async (req, res) => {
     return res.status(400).send(error);
   }
 };
+const StudentsExamResult = async (req, res) => {
+  try {
+    const results = await prisma.studentExam.findMany({
+      where: {
+        examId: Number(req.params.id),
+      },
+      include: {
+        user: true,
+      },
+    });
+    return res.status(200).json(results);
+  } catch (error) {
+    console.log(error);
+    return res.status(400).send(error);
+  }
+};
 module.exports = {
   create,
   submitExam,
   getStudentExams,
   studentCertificates,
+  StudentsExamResult,
 };
