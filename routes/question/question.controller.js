@@ -33,7 +33,7 @@ const edit = async (req, res) => {
       },
       data: data,
     });
-    return res.status(200).json("success to edit Question");
+    return res.status(200).json(question);
   } catch (error) {
     return res.status(400).json(error);
   }
