@@ -12,7 +12,7 @@ const create = async (req, res) => {
       },
     });
     console.log(createChapter);
-    return res.status(200).json("success to create chapter");
+    return res.status(200).json(createChapter);
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);

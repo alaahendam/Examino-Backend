@@ -16,7 +16,7 @@ const create = async (req, res) => {
       },
     });
     console.log(createquestion);
-    return res.status(200).json("success to create question");
+    return res.status(200).json(createquestion);
   } catch (error) {
     console.log(error);
     return res.status(400).json(error);
