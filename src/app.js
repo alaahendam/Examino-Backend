@@ -15,7 +15,7 @@ app.use(cors({ origin: "*" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
-  return res.status(200).send("this server work good time zone");
+  return res.status(200).send("this server work good with out new Date");
 });
 app.use("/user", userRouter);
 app.use("/level", levelRouter);
