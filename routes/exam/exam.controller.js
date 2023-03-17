@@ -86,7 +86,7 @@ const getAllTeacherExams = async (req, res) => {
         ownerId: Number(req.params.id),
       },
       orderBy: {
-        start: "asc",
+        start: "desc",
       },
     });
     return res.status(200).json(teacherExams);
