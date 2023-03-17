@@ -33,6 +33,7 @@ const login = async (req, res) => {
 };
 const create = async (req, res) => {
   const { name, userId, email, telephone, password, role } = req.body;
+  console.log(req.body);
   const encryptedPassword = await bcrypt.hash(password, 10);
 
   try {

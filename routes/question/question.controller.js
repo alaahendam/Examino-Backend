@@ -38,28 +38,7 @@ const edit = async (req, res) => {
     return res.status(400).json(error);
   }
 };
-// const getAll = async (req, res) => {
-//   const question = await prisma.question.findMany();
-//   if (question) {
-//     return res.status(200).json(question);
-//   } else {
-//     return res.status(400).json("can't find any question");
-//   }
-// };
-// const addquestion = async (req, res) => {
-//   const { name, ownerId } = req.body;
-//   var createdUser = await prisma.user.update({
-//     where: {
-//       id: Number(ownerId),
-//     },
-//     data: {
-//       questions: {
-//         connect: [{ id: 1 }, { id: 7 }],
-//       },
-//     },
-//   });
-//   return res.status(200).json("all questions");
-// };
+
 const deleteAll = async (req, res) => {
   try {
     const deleteQuestion = await prisma.question.deleteMany();
@@ -81,25 +60,7 @@ const getChapterQuestions = async (req, res) => {
     return res.status(400).json("can't find any question");
   }
 };
-// const questionInfo = async (req, res) => {
-//   const { questionName, ownerId } = req.body;
-//   console.log(req.body);
-//   try {
-//     const question = await prisma.question.findMany({
-//       where: {
-//         ownerId: Number(ownerId),
-//         name: questionName,
-//       },
-//       include: {
-//         chatpers: true,
-//       },
-//     });
-//     return res.status(200).json(question);
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).json("can't find any question");
-//   }
-// };
+
 const deleteQuestion = async (req, res) => {
   try {
     const deleteQuestion = await prisma.question.delete({
@@ -115,10 +76,7 @@ const deleteQuestion = async (req, res) => {
 module.exports = {
   create,
   edit,
-  //   getAll,
-  //   addquestion,
   deleteAll,
   getChapterQuestions,
   deleteQuestion,
-  //   questionInfo,
 };

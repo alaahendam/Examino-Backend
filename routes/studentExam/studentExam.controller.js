@@ -157,6 +157,9 @@ const studentCertificates = async (req, res) => {
         grade: {
           gte: 75,
         },
+        examEnd: {
+          lte: new Date(),
+        },
       },
     });
     return res.status(200).json(certificates);
